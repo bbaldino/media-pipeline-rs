@@ -1,0 +1,18 @@
+TODO
+
+* Start with RTCP/RTP demuxing
+* Go into the RTCP pipeline from there, since the parsing for that is done
+
+
+"attach_end"
+Originally the idea was for all Node types to be Clone, because:
+  a) this makes accessing the shared data easy: the pipeline has a ref to the node and the 'control plane' has a ref, so when the control plane needs to make a change it has a handle
+  b) this makes building the pipeline more ergonomic, because it can be built "in order".  If nodes aren't clone, then you have to add node C to node B before you add node B to node A (since you lose your handle on it when doing so)
+
+But, it also has some drawbacks:
+  a) nodes can't avoid holding data that isn't shared in an Arc<Mutex> because then they wouldn't be Clone
+  b) Holding the 'next' reference outside of an Arc<Mutex> makes a big difference, so even if 2 places had handles to the node, changing the 'next' node value wouldn't take effect if it wasn't on the node instance that was actually _in_ the pipeline.
+
+'b' could be addressed by differentiating "Nodes" and "NodeDataHandles" (which would only contain the shared data), but I also think it'd be fine for the control plane to just hold the reference to the shared data, not the node itself.
+
+I'd like to enable the optimization described in 'a', so we'll make Nodes not Clone, and we can somewhat address the pipeline ergonomics issue by adding an "attach_end" method to Node which would add the new node at the _end_ of that node chain instead of directly to the node it's called on.  This doesn't work with (sub)pipelines with something like a Demuxer in them (because it wouldn't know which path to append it to) but we can still construct the linear subpipelines this way and then attach them together.
