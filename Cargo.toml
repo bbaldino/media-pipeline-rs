@@ -9,3 +9,5 @@ edition = "2021"
 anyhow = "1.0.86"
 rtp-rs = { path = "../rtp-rs" }
 bitcursor = { path = "../bitcursor" }
+serde_json = { version = "1.0.117", features = ["preserve_order"] }
+serde = { version = "1.0.203", features = ["derive"] }

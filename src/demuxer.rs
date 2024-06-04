@@ -1,4 +1,7 @@
-use crate::{node::Node, packet_info::PacketInfo};
+use crate::{
+    node::{Node, NodeVisitor, PacketDemuxer, SomePacketHandler},
+    packet_info::PacketInfo,
+};
 
 pub type Predicate<T> = dyn Fn(&T) -> bool;
 
@@ -20,17 +23,25 @@ impl StaticDemuxer {
     }
 }
 
-impl Node for StaticDemuxer {
-    fn process_packet(&mut self, packet_info: PacketInfo) {
+impl PacketDemuxer for StaticDemuxer {
+    fn find_path(&mut self, packet_info: &PacketInfo) -> Option<&mut dyn Node> {
         for path in &mut self.packet_paths {
-            if (path.predicate)(&packet_info) {
-                path.next.process_packet(packet_info);
-                return;
+            if (path.predicate)(packet_info) {
+                return Some(&mut *path.next);
             }
         }
+        None
     }
 
-    fn attach(&mut self, next: Box<dyn Node>) {
-        panic!("Can't call attach on Demuxer");
+    fn visit(&mut self, visitor: &mut dyn NodeVisitor) {
+        for path in &mut self.packet_paths {
+            path.next.visit(visitor);
+        }
+    }
+}
+
+impl From<StaticDemuxer> for SomePacketHandler {
+    fn from(value: StaticDemuxer) -> Self {
+        SomePacketHandler::PacketDemuxer(Box::new(value))
     }
 }

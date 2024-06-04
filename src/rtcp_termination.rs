@@ -1,28 +1,23 @@
 use rtp_rs::rtcp::rtcp_packet::SomeRtcpPacket;
 
 use crate::{
-    node::{NextNode, Node},
+    node::{PacketFilter, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
 };
 
 // TODO: we'll have a tokio::sync::broadcast::Sender here to emit events.  its send method isn't
 // async so we can call it directly
 #[derive(Default)]
-pub struct RtcpTermination {
-    next: NextNode,
-}
+pub struct RtcpTermination;
 
-impl Node for RtcpTermination {
-    fn process_packet(&mut self, packet_info: PacketInfo) {
-        let rtcp = match packet_info.packet {
+impl PacketFilter for RtcpTermination {
+    fn should_forward(&mut self, packet_info: &PacketInfo) -> bool {
+        let rtcp = match &packet_info.packet {
             SomePacket::RtcpPacket(rtcp) => rtcp,
-            _ => {
-                println!(
-                    "RTCP pipeline received non-RTCP packet {:?}",
-                    packet_info.packet
-                );
-                return;
-            }
+            _ => panic!(
+                "RTCP termination received non-rtcp packet {:x?}",
+                packet_info.packet
+            ),
         };
         match rtcp {
             SomeRtcpPacket::CompoundRtcpPacket(_) => {
@@ -38,10 +33,13 @@ impl Node for RtcpTermination {
             SomeRtcpPacket::RtcpFbFirPacket(_) => println!("got fir"),
             SomeRtcpPacket::RtcpFbTccPacket(_) => println!("got tcc"),
             SomeRtcpPacket::UnknownRtcpPacket { header, payload } => println!("got unknown"),
-        }
+        };
+        false
     }
+}
 
-    fn attach(&mut self, next: Box<dyn Node>) {
-        self.next.replace(next);
+impl From<RtcpTermination> for SomePacketHandler {
+    fn from(val: RtcpTermination) -> Self {
+        SomePacketHandler::PacketFilter(Box::new(val))
     }
 }
