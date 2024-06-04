@@ -2,7 +2,7 @@ use anyhow::Result;
 use serde_json::json;
 
 use crate::packet_info::PacketInfo;
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 pub trait PacketObserver {
     fn observe(&mut self, packet_info: &PacketInfo);
@@ -77,15 +77,18 @@ pub struct DefaultNode {
 }
 
 impl DefaultNode {
-    pub fn from_handler<T: Into<String>, U: Into<SomePacketHandler>>(name: T, handler: U) -> Self {
-        Self {
+    pub fn from_handler<T: Into<String>, U: Into<SomePacketHandler>>(
+        name: T,
+        handler: U,
+    ) -> Box<Self> {
+        Box::new(Self {
             name: name.into(),
             handler: handler.into(),
             next: NextNode::default(),
             packets_ingress: 0,
             packets_egress: 0,
             packets_discarded: 0,
-        }
+        })
     }
 }
 
@@ -160,7 +163,7 @@ impl Node for DefaultNode {
 }
 
 /// Helper type that can be used for shared data in nodes
-pub struct SharedData<T>(Arc<Mutex<T>>);
+pub struct SharedData<T>(Arc<RwLock<T>>);
 
 // Deriving clone for SharedData doesn't seem to get picked up correctly when trying to derive
 // clone for a struct which contains a SharedData, so manually implement it here.
@@ -175,20 +178,24 @@ where
     T: Default,
 {
     fn default() -> Self {
-        Self(Arc::new(Mutex::new(T::default())))
+        Self(Arc::new(RwLock::new(T::default())))
     }
 }
 
 impl<T> SharedData<T> {
     pub fn new(value: T) -> Self {
-        Self(Arc::new(Mutex::new(value)))
+        Self(Arc::new(RwLock::new(value)))
     }
 
-    pub fn get(&self) -> MutexGuard<'_, T> {
+    pub fn read(&self) -> RwLockReadGuard<'_, T> {
         // An interesting note
         // [here](https://github.com/dtolnay/anyhow/issues/81#issuecomment-609171265) on why anyhow
         // doesn't work with this error and why posion errors with mutexes should always panic
-        self.0.lock().unwrap()
+        self.0.read().unwrap()
+    }
+
+    pub fn write(&self) -> RwLockWriteGuard<'_, T> {
+        self.0.write().unwrap()
     }
 }
 
