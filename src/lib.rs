@@ -5,6 +5,7 @@ use packet_info::SomePacket;
 use rtcp_termination::RtcpTermination;
 use rtp_parser::RtpParser;
 use rtp_rs::util::{looks_like_rtcp, looks_like_rtp};
+use tcc_generator::TccGenerator;
 
 pub mod compound_rtcp_parser;
 pub mod demuxer;
@@ -12,9 +13,12 @@ pub mod node;
 pub mod packet_info;
 pub mod rtcp_termination;
 pub mod rtp_parser;
+mod tcc_generator;
 
 pub fn build_pipeline() -> Box<dyn Node> {
-    let rtp_parser = Box::<RtpParser>::default();
+    let tcc_generator = Box::<TccGenerator>::default();
+    let mut rtp_parser = Box::<RtpParser>::default();
+    rtp_parser.attach(tcc_generator);
     let mut rtcp_parser = Box::<CompoundRtcpParser>::default();
 
     let rtcp_termination = Box::<RtcpTermination>::default();
