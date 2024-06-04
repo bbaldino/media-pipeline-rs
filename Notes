@@ -16,3 +16,33 @@ But, it also has some drawbacks:
 'b' could be addressed by differentiating "Nodes" and "NodeDataHandles" (which would only contain the shared data), but I also think it'd be fine for the control plane to just hold the reference to the shared data, not the node itself.
 
 I'd like to enable the optimization described in 'a', so we'll make Nodes not Clone, and we can somewhat address the pipeline ergonomics issue by adding an "attach_end" method to Node which would add the new node at the _end_ of that node chain instead of directly to the node it's called on.  This doesn't work with (sub)pipelines with something like a Demuxer in them (because it wouldn't know which path to append it to) but we can still construct the linear subpipelines this way and then attach them together.
+
+"stats tracking nodes"
+My original idea was to have nodes that would track stats and they could just wrap other nodes, making the stat tracking transparent and composable.  Something like:
+
+struct StatsTracker {
+   packets_received: u32,
+   packets_forwarded: u32,
+   inner: Box<dyn Node>
+}
+
+And then we implement Node for StatsTracker.  But this doesn't work: we want to increase packets_received when StatsTracker::process_packet is called from the previous node, but then we don't have any "place" to set as inner's 'next' such that we can track how many packets were forwarded.  So then I realized we really need two "inner" nodes inside StatsTracker: one which would function as the ingress side and receive packets from the prior node and forward them to inner, and another egress node which we could attach to inner and then forward on.  But then we have a problem that we need to hold the handle to the ingress/egress Node pointers in two places:
+  1. The prior node needs the Box<dyn Node> for the ingress node
+  2. The inner node needs the Box<dyn Node> for the egress node
+So then StatsTracker can't hold on to those handles to grab the stats.  We could, instead, used SharedData for the stats and have StatsTracker hold on to those, but instead I think we'll just have a struct for tracking stats that a node can hold on to and interact with more directly.  It's less dynamic, but probably better for performance and not too much of a pain to use.  E.g.:
+
+struct PacketStatsTracker {
+  packets_received: u32,
+  packets_forwarded: u32,
+}
+
+impl PacketStatsTracker {
+    fn packet_received(&mut self) {
+    	self.packets_received += 1;
+    }
+
+    fn packet_forwarded(&mut self) {
+    	self.packets forwarded += 1;
+    }
+}
+The downside here is that nodes need to remember to call self.stats_tracker.packet_received() and self.stats_tracker.packet_forwarded().  Maybe instead we could do this by having the nodes emit 'events' which things could attach to?  This would pair well with a "two layer" scheme for a node, where the "top" layer could be consistent for all--the problem is that it doesn't work with things like Demuxer.
