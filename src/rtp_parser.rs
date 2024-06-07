@@ -34,11 +34,12 @@ impl PacketTransformer for RtpParser {
         match packet_info.packet {
             SomePacket::UnparsedPacket(data) => {
                 let rtp_packet = read_rtp_packet(data).context("rtp parse")?;
+                // println!("parsed rtp packet: {rtp_packet:?}");
                 match self
                     .stream_information
                     .read()
                     .pt_map
-                    .get(&rtp_packet.header.payload_type)
+                    .get(&rtp_packet.payload_type())
                 {
                     Some(MediaType::Audio) => {
                         packet_info.packet = SomePacket::AudioRtpPacket(rtp_packet)
@@ -48,10 +49,9 @@ impl PacketTransformer for RtpParser {
                     }
                     None => panic!(
                         "Unable to find media type for payload type {}",
-                        rtp_packet.header.payload_type
+                        rtp_packet.payload_type()
                     ),
                 }
-                // println!("parsed rtp packet {rtp_packet:x?}");
                 Ok(packet_info)
             }
             _ => panic!(

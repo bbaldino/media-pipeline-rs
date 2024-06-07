@@ -17,7 +17,7 @@ impl PacketTransformer for AudioSilenceChecker {
                 packet_info.packet
             ),
         };
-        if let Some(audio_level_ext) = rtp_packet.header.get_extension_by_id(1) {
+        if let Some(audio_level_ext) = rtp_packet.get_extension_by_id(1) {
             if is_muted(audio_level_ext) {
                 packet_info.should_discard = true;
             }
