@@ -32,7 +32,7 @@ impl PacketFilter for RtcpTermination {
             SomeRtcpPacket::RtcpFbNackPacket(_) => println!("got nack"),
             SomeRtcpPacket::RtcpFbFirPacket(_) => println!("got fir"),
             SomeRtcpPacket::RtcpFbTccPacket(_) => println!("got tcc"),
-            SomeRtcpPacket::UnknownRtcpPacket { header, payload } => println!("got unknown"),
+            SomeRtcpPacket::UnknownRtcpPacket { .. } => println!("got unknown"),
         };
         false
     }
