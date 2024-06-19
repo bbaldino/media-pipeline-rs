@@ -112,7 +112,7 @@ impl Node for DefaultNode {
                 }
                 Err(e) => {
                     self.packets_discarded += 1;
-                    println!("Packet transformer failed: {e}");
+                    println!("Packet transformer failed: {e:?}");
                 }
             },
             SomePacketHandler::PacketFilter(ref mut f) => {

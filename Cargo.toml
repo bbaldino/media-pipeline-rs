@@ -11,3 +11,7 @@ rtp-rs = { path = "../rtp-rs" }
 bitcursor = { path = "../bitcursor" }
 serde_json = { version = "1.0.117", features = ["preserve_order"] }
 serde = { version = "1.0.203", features = ["derive"] }
+hmac = {version = "0.12.1", features = ["std"] }
+sha1 = { version = "0.10.6", features = ["asm"] }
+aes = "0.8.4"
+webrtc-srtp = { path = "../webrtc/srtp" } # "0.13.0"

@@ -9,5 +9,4 @@ pub mod pipeline;
 pub mod rtcp_termination;
 pub mod rtp_parser;
 pub mod srtp;
-pub mod srtp_decrypt;
 pub mod tcc_generator;

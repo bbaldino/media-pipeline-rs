@@ -18,7 +18,6 @@ impl PacketObserver for TccGenerator {
 
         if let Some(tcc) = rtp_packet.get_extension_by_id(5) {
             let seq_num = get_tcc_seq_num(tcc);
-            println!("got tcc seq num {seq_num}");
             // TODO: rest of tcc feedback generation
         }
     }

@@ -58,6 +58,25 @@ The downside here is that nodes need to remember to call self.stats_tracker.pack
 --> The two layer scheme ended up working well: We have (so far) a single 'Node' implementation that contains some 'PacketHandler' within it.  The node impl can handle the common stuff like tracking stats, while the packet handlers just focus on that logic and don't have to worry about the node-level stuff.
 
 
-node control plane
+node control plane/shared data
 ===============================
 Many nodes (the 'packet handlers' now, really) need access to outside information that can change.  For example, rtp parser needs access to the signaled payload types.  For most of these I'm hoping that a SharedData with a RwLock inside will work fine.  I do think _some_ examples could maybe use a tokio::sync::watch.  For example, the tcc generator that just needs to know the signaled tcc extension id.  It may be that the overhead is too high to do this for every packet (especially when it doesn't change often), but worth a try.
+
+I ended up running some experiments with this (most can be found [here](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=910756d3a165c799864be36f868d184c).  This test compares:
+
+* Raw (exclusive ownership)
+* tokio's watch
+* std::sync::Mutex
+* std::sync::RwLock
+
+Note that there is no contention, but for the most part these things will be written to seldomly.  I also tried 'ArcSwap' (not on playground, since the crate isn't available) but for me that took longer than all the others--there's a chance I wasn't using it correctly/optimally.  Outputs from a run of that test:
+
+```
+raw took 52ms
+watch took 156ms
+rwlock took 344ms
+mutex took 362ms
+arcswap took 934ms
+```
+
+So, for now, it looks like RwLock will work.
