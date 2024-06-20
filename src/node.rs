@@ -11,7 +11,7 @@ enum SomePacketHandlerResult<'a> {
     // The given PacketInfo should be forwarded to the next node
     Forward(PacketInfo),
     // The given PacketInfo should be forwarded to the given node
-    ForwardTo(PacketInfo, SomeNextNode<'a>),
+    ForwardTo(PacketInfo, &'a mut dyn Node),
     // The PacketInfo was consumed
     Consumed,
     // The PacketInfo should be discarded
@@ -74,26 +74,6 @@ impl DefaultNode {
     }
 }
 
-// The demuxer handler returns the path that should be taken, and does so by returning Option<&mut
-// dyn Node>, which differs from the way the next path is handled for everything else, whichi uses
-// the 'NextNode' type.  In order to unify the code flow of forwarding the next packet, we use this
-// enum to unify those two types.
-enum SomeNextNode<'a> {
-    NextNode(&'a mut NextNode),
-    NodeRef(&'a mut dyn Node),
-}
-
-impl PacketProcessor for SomeNextNode<'_> {
-    fn process_packet(&mut self, packet_info: PacketInfo) {
-        match self {
-            SomeNextNode::NextNode(nn) => nn.process_packet(packet_info),
-            SomeNextNode::NodeRef(next) => {
-                next.process_packet(packet_info);
-            }
-        }
-    }
-}
-
 impl PacketProcessor for DefaultNode {
     fn process_packet(&mut self, packet_info: PacketInfo) {
         self.packets_ingress += 1;
@@ -116,10 +96,7 @@ impl PacketProcessor for DefaultNode {
             }
             SomePacketHandler::PacketDemuxer(ref mut d) => {
                 if let Some(path) = d.find_path(&packet_info) {
-                    Ok(SomePacketHandlerResult::ForwardTo(
-                        packet_info,
-                        SomeNextNode::NodeRef(path),
-                    ))
+                    Ok(SomePacketHandlerResult::ForwardTo(packet_info, path))
                 } else {
                     Ok(SomePacketHandlerResult::Discard)
                 }
@@ -136,7 +113,7 @@ impl PacketProcessor for DefaultNode {
                 self.packets_egress += 1;
                 self.next.process_packet(packet);
             }
-            Ok(SomePacketHandlerResult::ForwardTo(packet, mut node)) => {
+            Ok(SomePacketHandlerResult::ForwardTo(packet, node)) => {
                 self.packets_egress += 1;
                 node.process_packet(packet);
             }
