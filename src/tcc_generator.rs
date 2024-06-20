@@ -1,7 +1,7 @@
 use rtp_rs::rtp::tcc_header_extension::get_tcc_seq_num;
 
 use crate::{
-    node::{PacketObserver, SomePacketHandler},
+    packet_handler::{PacketObserver, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
 };
 
@@ -17,7 +17,7 @@ impl PacketObserver for TccGenerator {
         };
 
         if let Some(tcc) = rtp_packet.get_extension_by_id(5) {
-            let seq_num = get_tcc_seq_num(tcc);
+            let _seq_num = get_tcc_seq_num(tcc);
             // TODO: rest of tcc feedback generation
         }
     }

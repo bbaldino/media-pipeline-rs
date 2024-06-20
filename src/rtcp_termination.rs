@@ -1,7 +1,7 @@
 use rtp_rs::rtcp::rtcp_packet::SomeRtcpPacket;
 
 use crate::{
-    node::{PacketFilter, SomePacketHandler},
+    packet_handler::{PacketFilter, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
 };
 
@@ -53,8 +53,10 @@ impl PacketFilter for RtcpTermination {
     }
 }
 
-impl From<RtcpTermination> for SomePacketHandler {
-    fn from(val: RtcpTermination) -> Self {
-        SomePacketHandler::PacketFilter(Box::new(val))
+impl TryFrom<RtcpTermination> for SomePacketHandler {
+    type Error = ();
+
+    fn try_from(val: RtcpTermination) -> Result<Self, Self::Error> {
+        Ok(SomePacketHandler::PacketFilter(Box::new(val)))
     }
 }

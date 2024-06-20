@@ -5,7 +5,8 @@ use bitcursor::ux::u7;
 use rtp_rs::rtp::rtp_packet::read_rtp_packet;
 
 use crate::{
-    node::{PacketTransformer, SharedData, SomePacketHandler},
+    node::SharedData,
+    packet_handler::{PacketTransformer, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
 };
 

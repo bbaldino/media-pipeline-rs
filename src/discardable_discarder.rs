@@ -1,5 +1,5 @@
 use crate::{
-    node::{PacketFilter, SomePacketHandler},
+    packet_handler::{PacketFilter, SomePacketHandler},
     packet_info::PacketInfo,
 };
 

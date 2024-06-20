@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
 use crate::{
-    node::{PacketTransformer, SharedData, SomePacketHandler},
+    node::SharedData,
+    packet_handler::{PacketTransformer, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
 };
 use anyhow::{bail, Result};

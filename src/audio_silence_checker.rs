@@ -2,7 +2,7 @@ use anyhow::Result;
 use rtp_rs::rtp::audio_level_header_extension::is_muted;
 
 use crate::{
-    node::{PacketTransformer, SomePacketHandler},
+    packet_handler::{PacketTransformer, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
 };
 

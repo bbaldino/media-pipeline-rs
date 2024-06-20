@@ -1,5 +1,6 @@
 use crate::{
-    node::{Node, NodeVisitor, PacketDemuxer, SomePacketHandler},
+    node::{Node, NodeVisitor},
+    packet_handler::{PacketDemuxer, SomePacketHandler},
     packet_info::PacketInfo,
 };
 

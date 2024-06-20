@@ -5,7 +5,8 @@ use rtp_rs::rtcp::rtcp_header;
 use webrtc_srtp::{config::Config, context::Context as SrtpContext};
 
 use crate::{
-    node::{PacketTransformer, SharedData, SomePacketHandler},
+    node::SharedData,
+    packet_handler::{PacketTransformer, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
 };
 

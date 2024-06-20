@@ -1,52 +1,13 @@
-use anyhow::{anyhow, Result};
+use anyhow::anyhow;
 use serde_json::json;
 
-use crate::packet_info::PacketInfo;
+use crate::{packet_handler::SomePacketHandler, packet_info::PacketInfo};
 use std::{
     sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
     time::{Duration, Instant},
 };
 
-pub trait PacketObserver {
-    fn observe(&mut self, packet_info: &PacketInfo);
-}
-
-pub trait PacketTransformer {
-    fn transform(&mut self, packet_info: PacketInfo) -> Result<PacketInfo>;
-}
-
-pub trait PacketFilter {
-    fn should_forward(&mut self, packet_info: &PacketInfo) -> bool;
-}
-
-impl<F> PacketFilter for F
-where
-    F: FnMut(&PacketInfo) -> bool,
-{
-    fn should_forward(&mut self, packet_info: &PacketInfo) -> bool {
-        (self)(packet_info)
-    }
-}
-
-pub trait PacketConsumer {
-    fn consume(&mut self, packet_info: PacketInfo);
-}
-
-pub trait PacketDemuxer {
-    fn find_path(&mut self, packet_info: &PacketInfo) -> Option<&mut dyn Node>;
-    // PacketDemuxer has to have its own visitor logic since it handles its own paths
-    fn visit(&mut self, visitor: &mut dyn NodeVisitor);
-}
-
-pub enum SomePacketHandler {
-    PacketObserver(Box<dyn PacketObserver>),
-    PacketTransformer(Box<dyn PacketTransformer>),
-    PacketFilter(Box<dyn PacketFilter>),
-    PacketConsumer(Box<dyn PacketConsumer>),
-    PacketDemuxer(Box<dyn PacketDemuxer>),
-}
-
-pub enum SomePacketHandlerResult<'a> {
+enum SomePacketHandlerResult<'a> {
     // The given PacketInfo should be forwarded to the next node
     Forward(PacketInfo),
     // The given PacketInfo should be forwarded to the given node
@@ -73,9 +34,12 @@ impl NodeVisitor for StatsNodeVisitor {
     }
 }
 
-pub trait Node {
-    fn name(&self) -> String;
+pub trait PacketProcessor {
     fn process_packet(&mut self, packet_info: PacketInfo);
+}
+
+pub trait Node: PacketProcessor {
+    fn name(&self) -> String;
     fn attach(&mut self, next: Box<dyn Node>);
     fn get_stats(&self) -> serde_json::Value;
     fn visit(&mut self, visitor: &mut dyn NodeVisitor);
@@ -114,18 +78,12 @@ impl DefaultNode {
 // dyn Node>, which differs from the way the next path is handled for everything else, whichi uses
 // the 'NextNode' type.  In order to unify the code flow of forwarding the next packet, we use this
 // enum to unify those two types.
-// TODO: maybe we want to split 'PacketProcessor' into a different trait, then we don't have to
-// have all the extra stuff here.
 enum SomeNextNode<'a> {
     NextNode(&'a mut NextNode),
     NodeRef(&'a mut dyn Node),
 }
 
-impl Node for SomeNextNode<'_> {
-    fn name(&self) -> String {
-        todo!()
-    }
-
+impl PacketProcessor for SomeNextNode<'_> {
     fn process_packet(&mut self, packet_info: PacketInfo) {
         match self {
             SomeNextNode::NextNode(nn) => nn.process_packet(packet_info),
@@ -134,25 +92,9 @@ impl Node for SomeNextNode<'_> {
             }
         }
     }
-
-    fn attach(&mut self, next: Box<dyn Node>) {
-        todo!()
-    }
-
-    fn get_stats(&self) -> serde_json::Value {
-        todo!()
-    }
-
-    fn visit(&mut self, visitor: &mut dyn NodeVisitor) {
-        todo!()
-    }
 }
 
-impl Node for DefaultNode {
-    fn name(&self) -> String {
-        self.name.clone()
-    }
-
+impl PacketProcessor for DefaultNode {
     fn process_packet(&mut self, packet_info: PacketInfo) {
         self.packets_ingress += 1;
         let start = Instant::now();
@@ -207,6 +149,12 @@ impl Node for DefaultNode {
                 println!("Error processing packet: {e}");
             }
         }
+    }
+}
+
+impl Node for DefaultNode {
+    fn name(&self) -> String {
+        self.name.clone()
     }
 
     fn attach(&mut self, next: Box<dyn Node>) {

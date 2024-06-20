@@ -1,6 +1,7 @@
 use std::marker::PhantomData;
 
-use crate::node::{DefaultNode, Node, SomePacketHandler};
+use crate::node::{DefaultNode, Node};
+use crate::packet_handler::SomePacketHandler;
 
 pub struct Open;
 pub struct Terminated;

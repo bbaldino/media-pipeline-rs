@@ -4,6 +4,7 @@ pub mod compound_rtcp_parser;
 pub mod demuxer;
 pub mod discardable_discarder;
 pub mod node;
+pub mod packet_handler;
 pub mod packet_info;
 pub mod pipeline;
 pub mod rtcp_termination;
