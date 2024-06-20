@@ -2,10 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::{bail, Result};
 use rtp_rs::rtcp::rtcp_header;
-pub use webrtc_srtp::{
-    config::Config, config::SessionKeys, context::Context as SrtpContext,
-    protection_profile::ProtectionProfile,
-};
+use webrtc_srtp::{config::Config, context::Context as SrtpContext};
 
 use crate::{
     node::{PacketTransformer, SharedData, SomePacketHandler},
@@ -15,6 +12,9 @@ use crate::{
 pub struct SrtcpDecrypt {
     // TODO: can we do independent contexts for srtp and srtcp? the context type handles both,
     // but it'd be nicer if we didn't have to share...
+    // Actually, in practice there should be no contention between this and rtp, since we only
+    // process a single packet from a sender at a time, so i should look at just sharing them
+    // between here and srtp decrypt
     pub contexts: HashMap<u32, SrtpContext>,
     pub config: SharedData<Config>,
 }

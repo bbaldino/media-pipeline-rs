@@ -20,18 +20,33 @@ impl PacketFilter for RtcpTermination {
             ),
         };
         match rtcp {
-            SomeRtcpPacket::CompoundRtcpPacket(_) => {
+            SomeRtcpPacket::CompoundRtcpPacket(packets) => {
                 println!("got compound rtcp");
+                for packet in packets {
+                    match packet {
+                        SomeRtcpPacket::RtcpRrPacket(_) => println!("got rr"),
+                        SomeRtcpPacket::RtcpByePacket(_) => println!("got bye"),
+                        SomeRtcpPacket::RtcpSrPacket(_) => println!("got sr"),
+                        SomeRtcpPacket::RtcpSdesPacket(_) => println!("got sdes"),
+                        SomeRtcpPacket::RtcpFbNackPacket(_) => println!("got nack"),
+                        SomeRtcpPacket::RtcpFbFirPacket(_) => println!("got fir"),
+                        SomeRtcpPacket::RtcpFbTccPacket(_) => println!("got tcc"),
+                        SomeRtcpPacket::RtcpFbPliPacket(_) => println!("got pli"),
+                        SomeRtcpPacket::UnknownRtcpPacket { .. } => println!("got unknown"),
+                        SomeRtcpPacket::CompoundRtcpPacket(_) => {
+                            panic!("compound inside compound is invalid")
+                        }
+                    }
+                }
             }
-            SomeRtcpPacket::RtcpRrPacket(_) => {
-                println!("got rr");
-            }
+            SomeRtcpPacket::RtcpRrPacket(_) => println!("got rr"),
             SomeRtcpPacket::RtcpByePacket(_) => println!("got bye"),
             SomeRtcpPacket::RtcpSrPacket(_) => println!("got sr"),
             SomeRtcpPacket::RtcpSdesPacket(_) => println!("got sdes"),
             SomeRtcpPacket::RtcpFbNackPacket(_) => println!("got nack"),
             SomeRtcpPacket::RtcpFbFirPacket(_) => println!("got fir"),
             SomeRtcpPacket::RtcpFbTccPacket(_) => println!("got tcc"),
+            SomeRtcpPacket::RtcpFbPliPacket(_) => println!("got pli"),
             SomeRtcpPacket::UnknownRtcpPacket { .. } => println!("got unknown"),
         };
         false
