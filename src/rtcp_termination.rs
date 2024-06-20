@@ -53,10 +53,8 @@ impl PacketFilter for RtcpTermination {
     }
 }
 
-impl TryFrom<RtcpTermination> for SomePacketHandler {
-    type Error = ();
-
-    fn try_from(val: RtcpTermination) -> Result<Self, Self::Error> {
-        Ok(SomePacketHandler::PacketFilter(Box::new(val)))
+impl From<RtcpTermination> for SomePacketHandler {
+    fn from(value: RtcpTermination) -> Self {
+        SomePacketHandler::PacketFilter(Box::new(value))
     }
 }
