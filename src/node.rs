@@ -147,7 +147,8 @@ impl Node for DefaultNode {
             "packets_egress": self.packets_egress,
             "packets_discarded": self.packets_discarded,
             "errors": self.errors,
-            "process time per packet (us)": (self.total_processing_time / self.packets_ingress).as_micros(),
+            "total processing time": format!("{:?}", self.total_processing_time),
+            "process time per packet (ns)": (self.total_processing_time / self.packets_ingress).as_nanos(),
         })
     }
 
@@ -211,10 +212,6 @@ impl NextNode {
 
     pub fn replace(&mut self, new: Box<dyn Node>) -> Option<Box<dyn Node>> {
         self.0.replace(new)
-    }
-
-    pub fn take(&mut self) -> Option<Box<dyn Node>> {
-        self.0.take()
     }
 
     pub fn visit(&mut self, visitor: &mut dyn NodeVisitor) {
