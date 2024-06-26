@@ -31,3 +31,17 @@ impl PacketInfo {
         }
     }
 }
+
+pub fn looks_like_rtp(packet_info: &PacketInfo) -> bool {
+    match &packet_info.packet {
+        SomePacket::UnparsedPacket(ref packet) => rtp_rs::util::looks_like_rtp(packet),
+        some_packet => panic!("Unexpected packet type: {some_packet:?}"),
+    }
+}
+
+pub fn looks_like_rtcp(packet_info: &PacketInfo) -> bool {
+    match &packet_info.packet {
+        SomePacket::UnparsedPacket(ref packet) => rtp_rs::util::looks_like_rtcp(packet),
+        some_packet => panic!("Unexpected packet type: {some_packet:?}"),
+    }
+}
