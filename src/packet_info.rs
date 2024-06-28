@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, time::Instant};
 
 use rtp_rs::{rtcp::rtcp_packet::SomeRtcpPacket, rtp::rtp_packet::RtpPacket};
 
@@ -23,20 +23,23 @@ impl Display for SomePacket {
 }
 
 pub struct PacketInfo {
+    pub received_time: Instant,
     pub packet: SomePacket,
     pub should_discard: bool,
 }
 
 impl PacketInfo {
-    pub fn new(packet: SomePacket) -> Self {
+    pub fn new(packet: SomePacket, received_time: Instant) -> Self {
         Self {
+            received_time,
             packet,
             should_discard: false,
         }
     }
 
-    pub fn new_unparsed(data: Vec<u8>) -> Self {
+    pub fn new_unparsed(data: Vec<u8>, received_time: Instant) -> Self {
         Self {
+            received_time,
             packet: SomePacket::UnparsedPacket(data),
             should_discard: false,
         }
