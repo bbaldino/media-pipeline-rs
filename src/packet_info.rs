@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use rtp_rs::{rtcp::rtcp_packet::SomeRtcpPacket, rtp::rtp_packet::RtpPacket};
 
 #[derive(Debug)]
@@ -9,6 +11,15 @@ pub enum SomePacket {
     RtpPacket(RtpPacket),
     AudioRtpPacket(RtpPacket),
     VideoRtpPacket(RtpPacket),
+}
+
+impl Display for SomePacket {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SomePacket::VideoRtpPacket(rtp) => write!(f, "{rtp}"),
+            _ => write!(f, "some packet"),
+        }
+    }
 }
 
 pub struct PacketInfo {

@@ -2,10 +2,7 @@ use anyhow::anyhow;
 use serde_json::json;
 
 use crate::{packet_handler::SomePacketHandler, packet_info::PacketInfo};
-use std::{
-    sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 enum SomePacketHandlerResult<'a> {
     // The given PacketInfo should be forwarded to the next node
@@ -159,43 +156,6 @@ impl Node for DefaultNode {
             SomePacketHandler::PacketConsumer(_) => {}
             _ => self.next.visit(visitor),
         };
-    }
-}
-
-/// Helper type that can be used for shared data in nodes
-pub struct SharedData<T>(Arc<RwLock<T>>);
-
-// Deriving clone for SharedData doesn't seem to get picked up correctly when trying to derive
-// clone for a struct which contains a SharedData, so manually implement it here.
-impl<T> Clone for SharedData<T> {
-    fn clone(&self) -> Self {
-        SharedData(self.0.clone())
-    }
-}
-
-impl<T> Default for SharedData<T>
-where
-    T: Default,
-{
-    fn default() -> Self {
-        Self(Arc::new(RwLock::new(T::default())))
-    }
-}
-
-impl<T> SharedData<T> {
-    pub fn new(value: T) -> Self {
-        Self(Arc::new(RwLock::new(value)))
-    }
-
-    pub fn read(&self) -> RwLockReadGuard<'_, T> {
-        // An interesting note
-        // [here](https://github.com/dtolnay/anyhow/issues/81#issuecomment-609171265) on why anyhow
-        // doesn't work with this error and why posion errors with mutexes should always panic
-        self.0.read().unwrap()
-    }
-
-    pub fn write(&self) -> RwLockWriteGuard<'_, T> {
-        self.0.write().unwrap()
     }
 }
 
