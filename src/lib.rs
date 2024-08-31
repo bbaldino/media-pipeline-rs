@@ -8,6 +8,7 @@ pub mod packet_handler;
 pub mod packet_info;
 pub mod packet_logger;
 pub mod pipeline;
+pub mod rfc_3711_index;
 pub mod rtcp_termination;
 pub mod rtp_parser;
 pub mod srtp;
