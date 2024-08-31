@@ -91,13 +91,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "bitcursor"
-version = "0.1.0"
+name = "bit-cursor"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c363564e9587675aaf557d12538af310d70708ecb03d95605ca2e45b07d60a9a"
 dependencies = [
  "bitvec",
+ "nsw-types",
  "num-traits",
  "paste",
- "ux",
 ]
 
 [[package]]
@@ -342,7 +344,7 @@ version = "0.1.0"
 dependencies = [
  "aes",
  "anyhow",
- "bitcursor",
+ "bit-cursor",
  "hmac",
  "rtp-rs",
  "serde",
@@ -398,6 +400,15 @@ dependencies = [
  "libc",
  "memoffset",
  "pin-utils",
+]
+
+[[package]]
+name = "nsw-types"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "27ccf58dd3a88ee544cd607f0f618700215888ba9701a35e4440524ed672c1a7"
+dependencies = [
+ "num-traits",
 ]
 
 [[package]]
@@ -588,7 +599,7 @@ name = "rtp-rs"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "bitcursor",
+ "bit-cursor",
  "bitvec",
  "bytes",
 ]
@@ -782,14 +793,6 @@ checksum = "fc1de2c688dc15305988b563c3854064043356019f97a4b46276fe734c4f07ea"
 dependencies = [
  "crypto-common",
  "subtle",
-]
-
-[[package]]
-name = "ux"
-version = "0.1.6"
-source = "git+https://github.com/bbaldino/uX.git?branch=master#594113516d04ddff1682959f0dc9f18059ec1cb7"
-dependencies = [
- "num-traits",
 ]
 
 [[package]]

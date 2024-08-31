@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use bitcursor::bit_cursor::BitCursor;
+use bit_cursor::bit_cursor::BitCursor;
 use rtp_rs::rtcp::rtcp_packet::parse_rtcp_packet;
 
 use crate::{

@@ -1,6 +1,6 @@
 use std::{borrow::Borrow, collections::HashMap, hash::Hash, u8};
 
-use bitcursor::ux::u7;
+use bit_cursor::nsw_types::u7;
 
 use crate::{
     rtp_parser::MediaType,
