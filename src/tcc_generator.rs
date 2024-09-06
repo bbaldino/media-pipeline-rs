@@ -1,4 +1,4 @@
-use rtp_rs::rtp::tcc_header_extension::get_tcc_seq_num;
+use rtp_parse::rtp::tcc_header_extension::get_tcc_seq_num;
 
 use crate::{
     packet_handler::{PacketObserver, SomePacketHandler},

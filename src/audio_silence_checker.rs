@@ -1,5 +1,5 @@
 use anyhow::Result;
-use rtp_rs::rtp::audio_level_header_extension::is_muted;
+use rtp_parse::rtp::audio_level_header_extension::is_muted;
 
 use crate::{
     packet_handler::{PacketTransformer, SomePacketHandler},

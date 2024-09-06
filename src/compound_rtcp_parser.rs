@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use bit_cursor::bit_cursor::BitCursor;
-use rtp_rs::rtcp::rtcp_packet::parse_rtcp_packet;
+use rtp_parse::rtcp::rtcp_packet::parse_rtcp_packet;
 
 use crate::{
     packet_handler::{PacketTransformer, SomePacketHandler},

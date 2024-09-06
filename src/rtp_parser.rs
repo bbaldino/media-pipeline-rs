@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use rtp_rs::rtp::rtp_packet::read_rtp_packet;
+use rtp_parse::rtp::rtp_packet::read_rtp_packet;
 
 use crate::{
     packet_handler::{PacketTransformer, SomePacketHandler},

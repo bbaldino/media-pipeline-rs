@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::{bail, Result};
-use rtp_rs::rtcp::rtcp_header;
+use rtp_parse::rtcp::rtcp_header;
 use webrtc_srtp::{config::Config, context::Context as SrtpContext};
 
 use crate::{

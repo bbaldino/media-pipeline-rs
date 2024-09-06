@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
-rtp-rs = { path = "../rtp-rs" }
+rtp-parse = "0.1.0"
 bit-cursor = "0.1.1"
 serde_json = { version = "1.0.117", features = ["preserve_order"] }
 serde = { version = "1.0.203", features = ["derive"] }

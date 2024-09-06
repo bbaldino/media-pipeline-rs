@@ -1,4 +1,4 @@
-use rtp_rs::rtcp::rtcp_packet::SomeRtcpPacket;
+use rtp_parse::rtcp::rtcp_packet::SomeRtcpPacket;
 
 use crate::{
     packet_handler::{PacketFilter, SomePacketHandler},

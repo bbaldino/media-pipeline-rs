@@ -6,7 +6,7 @@ use crate::{
     util::SharedData,
 };
 use anyhow::{bail, Result};
-use rtp_rs::rtp::rtp_header::RtpHeader;
+use rtp_parse::rtp::rtp_header::RtpHeader;
 use webrtc_srtp::{config::Config, context::Context as SrtpContext};
 
 // https://datatracker.ietf.org/doc/html/rfc3711#section-3.1
