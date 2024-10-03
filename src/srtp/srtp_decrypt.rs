@@ -92,7 +92,10 @@ impl From<SrtpDecrypt> for SomePacketHandler {
 
 #[cfg(test)]
 mod test {
-    use std::io::{Cursor, Read};
+    use std::{
+        io::{Cursor, Read},
+        time::Instant,
+    };
 
     use webrtc_srtp::protection_profile::ProtectionProfile;
 
@@ -176,6 +179,7 @@ mod test {
             .transform(PacketInfo {
                 packet: SomePacket::UnparsedPacket(packet),
                 should_discard: false,
+                received_time: Instant::now(),
             })
             .unwrap();
 
