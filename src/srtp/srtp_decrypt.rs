@@ -5,7 +5,7 @@ use crate::{
     util::SharedData,
 };
 use anyhow::{bail, Result};
-use data_pipeline::data_handler::{DataTransformer, SomeDataHandler};
+use data_pipeline_rs::data_handler::{DataTransformer, SomeDataHandler};
 use rtp_parse::rtp::rtp_header::RtpHeader;
 use webrtc_srtp::{config::Config, context::Context as SrtpContext};
 

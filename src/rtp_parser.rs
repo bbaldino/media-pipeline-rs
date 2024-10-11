@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use data_pipeline::data_handler::{DataTransformer, SomeDataHandler};
+use data_pipeline_rs::data_handler::{DataTransformer, SomeDataHandler};
 use rtp_parse::rtp::rtp_packet::read_rtp_packet;
 
 use crate::{

@@ -1,4 +1,4 @@
-use data_pipeline::data_handler::{DataObserver, SomeDataHandler};
+use data_pipeline_rs::data_handler::{DataObserver, SomeDataHandler};
 use rtp_parse::rtp::tcc_header_extension::get_tcc_seq_num;
 
 use crate::{

@@ -1,4 +1,4 @@
-use data_pipeline::data_handler::{DataFilter, SomeDataHandler};
+use data_pipeline_rs::data_handler::{DataFilter, SomeDataHandler};
 
 use crate::packet_info::PacketInfo;
 

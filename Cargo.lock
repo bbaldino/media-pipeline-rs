@@ -201,8 +201,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "data-pipeline"
+name = "data-pipeline-rs"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "18e7bd341c1e9821878bb3962df0204ffecd28b42ea19f3a507d13e9aee37484"
 dependencies = [
  "anyhow",
  "serde_json",
@@ -356,7 +358,7 @@ dependencies = [
  "aes",
  "anyhow",
  "bit-cursor",
- "data-pipeline",
+ "data-pipeline-rs",
  "hmac",
  "rtp-parse",
  "serde",
@@ -582,6 +584,7 @@ dependencies = [
 [[package]]
 name = "rtcp"
 version = "0.11.0"
+source = "git+https://github.com/bbaldino/webrtc.git?branch=master#632f8a553e2018ce05ad5af63da1a0355cc036bc"
 dependencies = [
  "bytes",
  "thiserror",
@@ -591,8 +594,10 @@ dependencies = [
 [[package]]
 name = "rtp"
 version = "0.11.0"
+source = "git+https://github.com/bbaldino/webrtc.git?branch=master#632f8a553e2018ce05ad5af63da1a0355cc036bc"
 dependencies = [
  "bytes",
+ "memchr",
  "portable-atomic",
  "rand",
  "serde",
@@ -824,6 +829,7 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 [[package]]
 name = "webrtc-srtp"
 version = "0.13.0"
+source = "git+https://github.com/bbaldino/webrtc.git?branch=master#632f8a553e2018ce05ad5af63da1a0355cc036bc"
 dependencies = [
  "aead",
  "aes",
@@ -845,6 +851,7 @@ dependencies = [
 [[package]]
 name = "webrtc-util"
 version = "0.9.0"
+source = "git+https://github.com/bbaldino/webrtc.git?branch=master#632f8a553e2018ce05ad5af63da1a0355cc036bc"
 dependencies = [
  "async-trait",
  "bitflags 1.3.2",

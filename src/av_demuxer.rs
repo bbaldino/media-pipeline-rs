@@ -1,4 +1,4 @@
-use data_pipeline::{
+use data_pipeline_rs::{
     data_handler::{DataDemuxer, SomeDataHandler},
     node::NodeRef,
     node_visitor::NodeVisitor,

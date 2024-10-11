@@ -1,5 +1,5 @@
 use anyhow::Result;
-use data_pipeline::data_handler::{DataTransformer, SomeDataHandler};
+use data_pipeline_rs::data_handler::{DataTransformer, SomeDataHandler};
 use rtp_parse::rtp::audio_level_header_extension::is_muted;
 
 use crate::packet_info::{PacketInfo, SomePacket};

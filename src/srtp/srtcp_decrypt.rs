@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::{bail, Result};
-use data_pipeline::data_handler::{DataTransformer, SomeDataHandler};
+use data_pipeline_rs::data_handler::{DataTransformer, SomeDataHandler};
 use rtp_parse::rtcp::rtcp_header;
 use webrtc_srtp::{config::Config, context::Context as SrtpContext};
 
