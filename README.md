@@ -2,8 +2,8 @@
 
 RTP media pipelines in rust
 
-A framework and implementation for stringing nodes together which perform
-various operations on RTP/RTCP packets.
+An (in-progress) implementation of RTP media pipelines built on top of
+[data-pipeline-rs](https://github.com/bbaldino/data-pipeline/).
 
 ## Pipeline build example
 
