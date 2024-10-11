@@ -15,18 +15,18 @@ PipelineBuilder::new()
             ConditionalPath {
                 predicate: Box::new(looks_like_rtp),
                 next: PipelineBuilder::new()
-                    .attach(
+                    .attach_handler(
                         "rtp decrypt",
                         SrtpDecrypt {
                             config: srtp_config.clone(),
                             contexts: HashMap::new(),
                         },
                     )
-                    .attach(
+                    .attach_handler(
                         "RTP parser",
                         RtpParser::new(stream_information.subscribe_to_pt_changes()),
                     )
-                    .attach(
+                    .attach_handler(
                         "TCC generator",
                         TccGenerator::new(
                             stream_information
@@ -37,11 +37,11 @@ PipelineBuilder::new()
                         "A/V demuxer",
                         AvDemuxer::new(
                             PipelineBuilder::new()
-                                .attach("audio silence checker", AudioSilenceChecker)
-                                .attach("audio discarder", DiscardableDiscarder)
+                                .attach_handler("audio silence checker", AudioSilenceChecker)
+                                .attach_handler("audio discarder", DiscardableDiscarder)
                                 .build(),
                             PipelineBuilder::new()
-                                .attach("video discarder", DiscardableDiscarder)
+                                .attach_handler("video discarder", DiscardableDiscarder)
                                 .build(),
                         ),
                     )
@@ -50,15 +50,15 @@ PipelineBuilder::new()
             ConditionalPath {
                 predicate: Box::new(looks_like_rtcp),
                 next: PipelineBuilder::new()
-                    .attach(
+                    .attach_handler(
                         "rtcp decrypt",
                         SrtcpDecrypt {
                             config: srtp_config.clone(),
                             contexts: HashMap::new(),
                         },
                     )
-                    .attach("RTCP parser", CompoundRtcpParser)
-                    .attach("RTCP termination", RtcpTermination)
+                    .attach_handler("RTCP parser", CompoundRtcpParser)
+                    .attach_handler("RTCP termination", RtcpTermination)
                     .build(),
             },
         ]),
