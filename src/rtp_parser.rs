@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
+use data_pipeline::data_handler::{DataTransformer, SomeDataHandler};
 use rtp_parse::rtp::rtp_packet::read_rtp_packet;
 
 use crate::{
-    packet_handler::{PacketTransformer, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
     stream_information_store::PayloadTypes,
     util::LiveStateReader,
@@ -24,36 +24,29 @@ impl RtpParser {
     }
 }
 
-impl PacketTransformer for RtpParser {
-    fn transform(&mut self, mut packet_info: PacketInfo) -> Result<PacketInfo> {
-        match packet_info.packet {
-            SomePacket::UnparsedPacket(data) => {
-                let rtp_packet = read_rtp_packet(data).context("rtp parse")?;
+impl DataTransformer<PacketInfo> for RtpParser {
+    fn transform(&mut self, mut data: PacketInfo) -> Result<PacketInfo> {
+        match data.packet {
+            SomePacket::UnparsedPacket(packet_data) => {
+                let rtp_packet = read_rtp_packet(packet_data).context("rtp parse")?;
                 // println!("parsed rtp packet: {rtp_packet:?}");
                 match self.payload_types.value().get(&rtp_packet.payload_type()) {
-                    Some(MediaType::Audio) => {
-                        packet_info.packet = SomePacket::AudioRtpPacket(rtp_packet)
-                    }
-                    Some(MediaType::Video) => {
-                        packet_info.packet = SomePacket::VideoRtpPacket(rtp_packet)
-                    }
+                    Some(MediaType::Audio) => data.packet = SomePacket::AudioRtpPacket(rtp_packet),
+                    Some(MediaType::Video) => data.packet = SomePacket::VideoRtpPacket(rtp_packet),
                     None => panic!(
                         "Unable to find media type for payload type {}",
                         rtp_packet.payload_type()
                     ),
                 }
-                Ok(packet_info)
+                Ok(data)
             }
-            _ => panic!(
-                "RTP parser got unexpected packet type: {:x?}",
-                packet_info.packet
-            ),
+            _ => panic!("RTP parser got unexpected packet type: {:x?}", data.packet),
         }
     }
 }
 
-impl From<RtpParser> for SomePacketHandler {
+impl From<RtpParser> for SomeDataHandler<PacketInfo> {
     fn from(val: RtpParser) -> Self {
-        SomePacketHandler::PacketTransformer(Box::new(val))
+        SomeDataHandler::Transformer(Box::new(val))
     }
 }

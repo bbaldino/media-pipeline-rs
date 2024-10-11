@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, collections::HashMap, hash::Hash, u8};
+use std::{borrow::Borrow, collections::HashMap, hash::Hash};
 
 use bit_cursor::nsw_types::u7;
 

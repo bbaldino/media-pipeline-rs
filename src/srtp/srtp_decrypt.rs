@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use crate::{
-    packet_handler::{PacketTransformer, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
     util::SharedData,
 };
 use anyhow::{bail, Result};
+use data_pipeline::data_handler::{DataTransformer, SomeDataHandler};
 use rtp_parse::rtp::rtp_header::RtpHeader;
 use webrtc_srtp::{config::Config, context::Context as SrtpContext};
 
@@ -57,9 +57,9 @@ impl SrtpDecrypt {
     }
 }
 
-impl PacketTransformer for SrtpDecrypt {
-    fn transform(&mut self, mut packet_info: PacketInfo) -> Result<PacketInfo> {
-        match packet_info.packet {
+impl DataTransformer<PacketInfo> for SrtpDecrypt {
+    fn transform(&mut self, mut data: PacketInfo) -> Result<PacketInfo> {
+        match data.packet {
             SomePacket::UnparsedPacket(ref buf) => {
                 let ssrc = RtpHeader::ssrc(buf);
                 let context = self.get_context(ssrc);
@@ -69,7 +69,7 @@ impl PacketTransformer for SrtpDecrypt {
                         // it's also a bit annoying that webrtc-rs parses the header as part of
                         // the decrypt, using its own types.  need to dig into what to do
                         // there overall.
-                        packet_info.packet = SomePacket::UnparsedPacket(bytes.to_vec());
+                        data.packet = SomePacket::UnparsedPacket(bytes.to_vec());
                     }
                     Err(e) => {
                         println!("Error decrypting packet: {e}");
@@ -80,13 +80,13 @@ impl PacketTransformer for SrtpDecrypt {
             _ => panic!("Unsupported packet type passed to srtp decrypt"),
         }
 
-        Ok(packet_info)
+        Ok(data)
     }
 }
 
-impl From<SrtpDecrypt> for SomePacketHandler {
+impl From<SrtpDecrypt> for SomeDataHandler<PacketInfo> {
     fn from(value: SrtpDecrypt) -> Self {
-        SomePacketHandler::PacketTransformer(Box::new(value))
+        SomeDataHandler::Transformer(Box::new(value))
     }
 }
 

@@ -1,19 +1,18 @@
-use crate::{
-    packet_handler::{PacketFilter, SomePacketHandler},
-    packet_info::PacketInfo,
-};
+use data_pipeline::data_handler::{DataFilter, SomeDataHandler};
+
+use crate::packet_info::PacketInfo;
 
 #[derive(Default)]
 pub struct DiscardableDiscarder;
 
-impl PacketFilter for DiscardableDiscarder {
-    fn should_forward(&mut self, packet_info: &PacketInfo) -> bool {
-        !packet_info.should_discard
+impl DataFilter<PacketInfo> for DiscardableDiscarder {
+    fn should_forward(&mut self, data: &PacketInfo) -> bool {
+        !data.should_discard
     }
 }
 
-impl From<DiscardableDiscarder> for SomePacketHandler {
+impl From<DiscardableDiscarder> for SomeDataHandler<PacketInfo> {
     fn from(value: DiscardableDiscarder) -> Self {
-        SomePacketHandler::PacketFilter(Box::new(value))
+        SomeDataHandler::Filter(Box::new(value))
     }
 }

@@ -1,7 +1,7 @@
+use data_pipeline::data_handler::{DataObserver, SomeDataHandler};
 use rtp_parse::rtp::tcc_header_extension::get_tcc_seq_num;
 
 use crate::{
-    packet_handler::{PacketObserver, SomePacketHandler},
     packet_info::{PacketInfo, SomePacket},
     util::LiveStateReader,
 };
@@ -19,9 +19,9 @@ impl TccGenerator {
     }
 }
 
-impl PacketObserver for TccGenerator {
-    fn observe(&mut self, packet_info: &PacketInfo) {
-        let rtp_packet = match packet_info.packet {
+impl DataObserver<PacketInfo> for TccGenerator {
+    fn observe(&mut self, data: &PacketInfo) {
+        let rtp_packet = match data.packet {
             SomePacket::AudioRtpPacket(ref rtp) => rtp,
             SomePacket::VideoRtpPacket(ref rtp) => rtp,
             _ => panic!("TccGenerator shouldn't see non rtp packet"),
@@ -36,8 +36,8 @@ impl PacketObserver for TccGenerator {
     }
 }
 
-impl From<TccGenerator> for SomePacketHandler {
+impl From<TccGenerator> for SomeDataHandler<PacketInfo> {
     fn from(value: TccGenerator) -> Self {
-        SomePacketHandler::PacketObserver(Box::new(value))
+        SomeDataHandler::Observer(Box::new(value))
     }
 }

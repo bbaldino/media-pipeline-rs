@@ -1,13 +1,9 @@
 pub mod audio_silence_checker;
 pub mod av_demuxer;
 pub mod compound_rtcp_parser;
-pub mod demuxer;
 pub mod discardable_discarder;
-pub mod node;
-pub mod packet_handler;
 pub mod packet_info;
 pub mod packet_logger;
-pub mod pipeline;
 pub mod rfc_3711_index;
 pub mod rtcp_termination;
 pub mod rtp_parser;
