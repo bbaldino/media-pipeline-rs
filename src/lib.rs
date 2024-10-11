@@ -11,3 +11,7 @@ pub mod srtp;
 pub mod stream_information_store;
 pub mod tcc_generator;
 pub mod util;
+
+pub use data_pipeline::{
+    handlers::static_demuxer, node::NodeRef, node_visitor::StatsNodeVisitor, pipeline_builder,
+};
